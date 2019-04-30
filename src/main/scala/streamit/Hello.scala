@@ -1,4 +1,4 @@
-package io.laserdisc.streamit
+package streamit
 
 object Hello {
 

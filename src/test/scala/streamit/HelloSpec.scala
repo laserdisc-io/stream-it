@@ -1,4 +1,4 @@
-package io.laserdisc.streamit
+package streamit
 
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec

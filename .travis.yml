@@ -1,0 +1,26 @@
+dist: trusty
+sudo: false
+
+language: scala
+scala:
+  - 2.12.8
+
+jdk:
+  - openjdk8
+  - openjdk11
+
+script:
+   - sbt ++$TRAVIS_SCALA_VERSION fullCiBuild
+
+cache:
+  directories:
+  - "$HOME/.coursier/cache"
+  - "$HOME/.ivy2/cache"
+  - "$HOME/.sbt"
+
+before_cache:
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" | xargs rm
+  - find $HOME/.ivy2/cache -name "*SNAPSHOT*" | xargs rm -rf
+  - find $HOME/.ivy2/cache -name "*.lock" | xargs rm -rf
+  - find $HOME/.coursier/cache -name "*.lock" -type f -delete
+

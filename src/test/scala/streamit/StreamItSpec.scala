@@ -21,15 +21,20 @@ trait StreamItSpec extends WordSpec {
 
   implicit protected lazy val timer: Timer[IO] = IO.timer(ec)
 
-  def runSpecWithIO(spec: Spec): TestStats =
+  def runSpecWithIO(spec: Spec): TestStats = {
+
+    // TODO: we'll flesh optionals out as we add coverage for runners
+    val settings = IO.pure(Settings(None, None, None, None, None, None, None))
+
     log4sLog[IO]("stream-it")
       .flatMap { implicit logger =>
         logger.info("starting app") *>
-          new SpecRunner[IO](Settings())
+          new SpecRunner[IO](settings)
             .run(spec)
             .compile
             .toList
       }
       .unsafeRunSync()
       .head
+  }
 }

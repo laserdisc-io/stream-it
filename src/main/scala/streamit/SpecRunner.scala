@@ -25,7 +25,7 @@ case class Spec(tasks: Seq[Task]) {
       logger.info(s" ============================================= ")
 }
 
-final class SpecRunner[F[_]: ConcurrentEffect: ContextShift: Timer](settings: Settings)(
+final class SpecRunner[F[_]: ConcurrentEffect: ContextShift: Timer](settings: F[Settings])(
   implicit logger: LogWriter[F]
 ) {
 

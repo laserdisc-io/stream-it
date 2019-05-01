@@ -11,4 +11,24 @@
     </root>
 
 
+    <!-- turning these off makes 'DEBUG' usable for everything else -->
+    <logger name="fs2.kafka" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.common" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.clients" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.clients.producer" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.clients.consumer" additivity="false" level="WARN"/>
+    <logger name="io.confluent.kafka.schemaregistry" additivity="false" level="WARN"/>
+
+    <!-- set to INFO when troubleshooting consumergroup/partion offset info, but too noisy for normal use -->
+    <logger name="org.apache.kafka.clients.consumer.internals.Fetcher" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.clients.consumer.internals.AbstractCoordinator" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.clients.consumer.internals.ConsumerCoordinator" additivity="false" level="WARN"/>
+
+    <!-- not really useful, even at info -->
+    <logger name="org.apache.zookeeper.ZooKeeper" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.clients.Metadata" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.common.utils.AppInfoParser" additivity="false" level="WARN"/>
+    <logger name="org.apache.kafka.clients.admin.AdminClientConfig" additivity="false" level="WARN"/>
+
+
 </configuration>

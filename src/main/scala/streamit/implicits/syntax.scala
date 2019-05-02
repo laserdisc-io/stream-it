@@ -1,7 +1,7 @@
 package streamit
 
+import cats.MonadError
 import cats.effect.{ ConcurrentEffect, Timer }
-import cats.{ MonadError, Show }
 import fs2.{ Chunk, Pipe, Pull, Stream }
 import io.circe.parser.parse
 import io.circe.{ Json, JsonNumber, JsonObject }
@@ -10,7 +10,7 @@ import streamit.util.CirceOpticsParser
 import scala.concurrent.duration.FiniteDuration
 import scala.language.implicitConversions
 
-package object implicits {
+package object syntax {
 
   implicit class StringToJsonOps(val str: String) extends AnyVal {
     def asJson: Json = parse(str) match {

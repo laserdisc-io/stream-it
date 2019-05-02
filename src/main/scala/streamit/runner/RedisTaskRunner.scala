@@ -11,7 +11,7 @@ import laserdisc._
 import laserdisc.fs2.{ RedisClient => LaserDiscClient, _ }
 import log.effect.LogWriter
 import streamit._
-import streamit.implicits._
+import streamit.syntax._
 import streamit.runner.Result.{ Failure, Success }
 
 object RedisTaskRunner {

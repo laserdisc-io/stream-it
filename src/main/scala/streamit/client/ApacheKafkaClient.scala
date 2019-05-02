@@ -51,7 +51,8 @@ class ApacheKafkaClient[F[_]: ConcurrentEffect](settings: KafkaSettings)(
     settings.zookeeper match {
       case None =>
         // zookeeper is an optional config, even if the kafkarunner gets configured
-        logger.infoS("Zookeeper host not configured, skipping ZK test")
+        logger
+          .infoS("Zookeeper host not configured, skipping ZK test")
           .flatMap(_ => Stream.empty)
       case Some(zkHost) =>
         Stream.bracketCase(
@@ -161,7 +162,7 @@ class ApacheKafkaClient[F[_]: ConcurrentEffect](settings: KafkaSettings)(
             )
 
           case Some(offsetAmt) =>
-            def toUTC(millis: Long) =
+            def toUTC(millis: Long): ZonedDateTime =
               ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.of("UTC"))
 
             resetOffsetListener(

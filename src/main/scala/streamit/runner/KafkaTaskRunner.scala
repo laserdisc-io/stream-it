@@ -7,7 +7,7 @@ import cats.instances.list._
 import cats.syntax.flatMap._
 import cats.syntax.traverse._
 import streamit.client.{ ApacheKafkaClient, FS2KafkaClient }
-import streamit.implicits._
+import streamit.syntax._
 import streamit.util.AvroToJSONDeserializer
 import streamit._
 import fs2.Stream

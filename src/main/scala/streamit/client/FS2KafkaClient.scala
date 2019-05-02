@@ -1,13 +1,13 @@
 package streamit.client
 
-import streamit._
 import cats.effect.{ ConcurrentEffect, _ }
 import fs2.Stream
+import cats.syntax.flatMap._
 import fs2.kafka.{ Serializer => _, _ }
 import log.effect.LogWriter
 import log.effect.fs2.syntax._
 import org.apache.kafka.common.serialization.{ Deserializer, Serializer }
-import streamit.KafkaSettings
+import streamit.{ KafkaSettings, _ }
 
 object FS2KafkaClient {
   def apply[F[_]: ConcurrentEffect: ContextShift: Timer: LogWriter](
@@ -31,23 +31,21 @@ class FS2KafkaClient[F[_]: ConcurrentEffect: ContextShift: Timer](settings: Kafk
     logger.infoS(
       s"Creating consumer in ${settings.groupId} for topic $topic on server: ${settings.bootstrapServers}"
     ) >>
-      (for {
-        ec <- consumerExecutionContextStream[F]
-        event <- consumerStream[F]
-                  .using(
-                    ConsumerSettings[K, V](keyDes, valDes, ec)
-                      .withAutoOffsetReset(AutoOffsetReset.Latest)
-                      .withClientId(KafkaClientId)
-                      .withBootstrapServers(settings.bootstrapServers)
-                      .withGroupId(settings.groupId.toString)
-                  )
-                  .evalTap(_.subscribeTo(topic))
-                  .flatMap(_.stream)
-                  .mapAsync(maxConcurrent = 25) { event =>
-                    ConcurrentEffect[F].pure(event)
-                  }
-
-      } yield event)
+      consumerExecutionContextStream[F] >>= { ec =>
+      consumerStream[F]
+        .using(
+          ConsumerSettings[K, V](keyDes, valDes, ec)
+            .withAutoOffsetReset(AutoOffsetReset.Latest)
+            .withClientId(KafkaClientId)
+            .withBootstrapServers(settings.bootstrapServers)
+            .withGroupId(settings.groupId.toString)
+        )
+        .evalTap(_.subscribeTo(topic))
+        .flatMap(_.stream)
+        .mapAsync(maxConcurrent = 25) { event =>
+          ConcurrentEffect[F].pure(event)
+        }
+    }
 
   def createProducer[K, V](
     implicit keySer: Serializer[K],

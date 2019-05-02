@@ -9,6 +9,19 @@ package object streamit {
   // remove this (letting the caller be restrictive), rather than the other way round..
   private[this] type AlphaNumDashes = String Refined MatchesRegex[W.`"^[a-zA-Z0-9\\\\-]+$"`.T]
 
-  final type AppName = AlphaNumDashes
+  // settings types
+  final type ZookeeperServer   = String
+  final type BootstrapServers  = String
+  final type SchemaRegistryURL = String
+  final type APIBaseURL        = String
+  final type Topic             = String
+
+  // kafka specific
+  val KafkaClientId = "stream-it"
+  final type ConsumerGroupId = String
+  final type TopicConfigKey  = String
+
+  // for verfications
+  final type JsonPathExpr = String
 
 }

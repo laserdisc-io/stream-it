@@ -2,7 +2,6 @@ package streamit
 
 import cats.effect.{ ConcurrentEffect, ContextShift, Timer }
 import cats.instances.list._
-import cats.syntax.apply._
 import cats.syntax.flatMap._
 import cats.syntax.show._
 import cats.syntax.traverse._
@@ -19,13 +18,13 @@ import streamit.util.TestStats
   */
 case class Spec(tasks: Seq[Task]) {
   def logPreview[F[_]: ConcurrentEffect](implicit logger: LogWriter[F]): F[Unit] =
-    logger.info(s" =============== spec preview  =============== ") *>
-      logger.info(s" tasks to perform: ") *>
-      tasks.map(t => logger.info(s"  - ${t.getClass.getSimpleName}: ${t.desc}")).toList.sequence *>
+    logger.info(s" =============== spec preview  =============== ") >>
+      logger.info(s" tasks to perform: ") >>
+      tasks.map(t => logger.info(s"  - ${t.getClass.getSimpleName}: ${t.desc}")).toList.sequence >>
       logger.info(s" ============================================= ")
 }
 
-final class SpecRunner[F[_]: ConcurrentEffect: ContextShift: Timer](settings: Settings)(
+final class SpecRunner[F[_]: ConcurrentEffect: ContextShift: Timer](settings: F[Settings])(
   implicit logger: LogWriter[F]
 ) {
 
@@ -35,14 +34,14 @@ final class SpecRunner[F[_]: ConcurrentEffect: ContextShift: Timer](settings: Se
       .flatMap { s =>
         def logSummary(stats: TestStats): Stream[F, TestStats] =
           Stream.eval {
-            logger.info(s" =============== results  =============== ") *>
-              stats.results.map(s => logger.info(s"  - ${s.show}")).sequence *>
+            logger.info(s" =============== results  =============== ") >>
+              stats.results.map(s => logger.info(s"  - ${s.show}")).sequence >>
               logger.info(
                 s"       ${stats.total} tests: ${stats.passed.size} passed, ${stats.failed.size} failed"
-              ) *>
+              ) >>
               logger.info(
                 s" =================== (duration: ${stats.durationMs}ms) ================== "
-              ) *>
+              ) >>
               ConcurrentEffect[F].pure(stats)
           }
 

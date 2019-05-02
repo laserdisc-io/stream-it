@@ -40,6 +40,11 @@ val scalacOpts = Seq(
   "-Ywarn-numeric-widen" // Warn when numerics are widened.
 )
 
+lazy val customResolvers = Seq(
+  Resolver.bintrayRepo("ovotech", "maven"),
+  "Confluent" at "https://packages.confluent.io/maven/"
+)
+
 val V = new {
   val scalatest      = "3.0.7"
   val kindProjector  = "0.9.10"
@@ -50,18 +55,48 @@ val V = new {
   val logEffect      = "0.5.0"
   val refined        = "0.9.5"
   val logbackClassic = "1.2.3"
+  val ciris          = "0.12.1"
+  val fs2Kafka       = "0.19.9"
+  val circe          = "0.11.1"
+  val circeOptics    = "0.11.0"
+  val laserdisc      = "0.2.3"
+  val http4s         = "0.20.0-RC1"
+  val confluent      = "5.2.1"
+  val avro           = "1.8.2"
+  val prometheus     = "0.9.0-M5"
+  val diffson        = "3.1.1"
 }
 
 lazy val appDependencies = Seq(
-  "com.github.ghik" %% "silencer-lib"    % V.silencer,
-  "org.typelevel"   %% "cats-core"       % V.cats,
-  "org.typelevel"   %% "cats-effect"     % V.catsEffect,
-  "io.laserdisc"    %% "log-effect-core" % V.logEffect,
-  "io.laserdisc"    %% "log-effect-fs2"  % V.logEffect,
-  "co.fs2"          %% "fs2-core"        % V.fs2,
-  "eu.timepit"      %% "refined"         % V.refined,
-  "ch.qos.logback"  % "logback-classic"  % V.logbackClassic % Test,
-  "org.scalatest"   %% "scalatest"       % V.scalatest % Test
+  "com.github.ghik"         %% "silencer-lib"         % V.silencer,
+  "org.typelevel"           %% "cats-core"            % V.cats,
+  "org.typelevel"           %% "cats-effect"          % V.catsEffect,
+  "io.laserdisc"            %% "log-effect-core"      % V.logEffect,
+  "io.laserdisc"            %% "log-effect-fs2"       % V.logEffect,
+  "co.fs2"                  %% "fs2-core"             % V.fs2,
+  "eu.timepit"              %% "refined"              % V.refined,
+  "com.ovoenergy"           %% "fs2-kafka"            % V.fs2Kafka,
+  "org.apache.avro"         % "avro"                  % V.avro,
+  "io.confluent"            % "kafka-avro-serializer" % V.confluent,
+  "io.laserdisc"            %% "log-effect-core"      % V.logEffect,
+  "io.laserdisc"            %% "log-effect-fs2"       % V.logEffect,
+  "is.cir"                  %% "ciris-cats"           % V.ciris,
+  "is.cir"                  %% "ciris-core"           % V.ciris,
+  "is.cir"                  %% "ciris-refined"        % V.ciris,
+  "io.circe"                %% "circe-core"           % V.circe,
+  "io.circe"                %% "circe-generic"        % V.circe,
+  "io.circe"                %% "circe-parser"         % V.circe,
+  "io.circe"                %% "circe-optics"         % V.circeOptics,
+  "com.github.ghik"         %% "silencer-lib"         % V.silencer,
+  "io.laserdisc"            %% "laserdisc-core"       % V.laserdisc,
+  "io.laserdisc"            %% "laserdisc-fs2"        % V.laserdisc,
+  "org.http4s"              %% "http4s-dsl"           % V.http4s,
+  "org.http4s"              %% "http4s-circe"         % V.http4s,
+  "org.http4s"              %% "http4s-blaze-client"  % V.http4s,
+  "org.lyranthe.prometheus" %% "client"               % V.prometheus,
+  "org.gnieh"               %% "diffson-circe"        % V.diffson,
+  "ch.qos.logback"          % "logback-classic"       % V.logbackClassic % Test,
+  "org.scalatest"           %% "scalatest"            % V.scalatest % Test
 ) map (_.withSources)
 
 lazy val compilerPluginsDependencies = Seq(
@@ -78,6 +113,7 @@ lazy val root = project
     scalaVersion        := `scala 212`,
     scalacOptions       ++= scalacOpts,
     organization        := "io.laserdisc",
+    resolvers           ++= customResolvers,
     libraryDependencies ++= appDependencies ++ compilerPluginsDependencies,
     addCommandAlias("format", ";scalafmt;test:scalafmt;scalafmtSbt"),
     addCommandAlias(

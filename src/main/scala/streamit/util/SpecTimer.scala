@@ -1,9 +1,9 @@
 package streamit.util
 
-import cats.effect.{ConcurrentEffect, ContextShift, Timer}
+import cats.effect.{ ConcurrentEffect, ContextShift, Timer }
 import cats.implicits._
 import streamit.runner.Result
-import streamit.runner.Result.{Failure, Success}
+import streamit.runner.Result.{ Failure, Success }
 
 case class TestStats(durationMs: Long, results: List[Result]) {
   val passed: List[Success] = results.collect { case r: Success => r }

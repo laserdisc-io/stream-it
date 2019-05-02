@@ -1,6 +1,6 @@
 package streamit
 
-import cats.effect.{ConcurrentEffect, ContextShift, Timer}
+import cats.effect.{ ConcurrentEffect, ContextShift, Timer }
 import cats.instances.list._
 import cats.syntax.apply._
 import cats.syntax.flatMap._

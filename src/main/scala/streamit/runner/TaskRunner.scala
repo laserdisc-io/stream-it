@@ -1,8 +1,8 @@
 package streamit.runner
 
 import cats.Show
-import cats.effect.{ConcurrentEffect, ContextShift, Timer}
-import streamit.{GeneralTask, Settings, Task}
+import cats.effect.{ ConcurrentEffect, ContextShift, Timer }
+import streamit.{ GeneralTask, Settings, Task }
 import fs2.Stream
 import log.effect.LogWriter
 

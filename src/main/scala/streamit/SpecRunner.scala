@@ -1,6 +1,6 @@
 package streamit
 
-import cats.effect.{ ConcurrentEffect, ContextShift, Timer }
+import cats.effect.{ConcurrentEffect, ContextShift, Timer}
 import cats.instances.list._
 import cats.syntax.apply._
 import cats.syntax.flatMap._
@@ -8,7 +8,7 @@ import cats.syntax.show._
 import cats.syntax.traverse._
 import fs2.Stream
 import log.effect.LogWriter
-import streamit.implicits._
+import streamit.runner.Result._
 import streamit.runner.TaskRunner
 import streamit.util.SpecTimer._
 import streamit.util.TestStats

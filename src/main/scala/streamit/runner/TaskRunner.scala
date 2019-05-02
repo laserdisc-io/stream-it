@@ -1,7 +1,8 @@
 package streamit.runner
 
-import cats.effect.{ ConcurrentEffect, ContextShift, Timer }
-import streamit.{ GeneralTask, Settings, Task }
+import cats.Show
+import cats.effect.{ConcurrentEffect, ContextShift, Timer}
+import streamit.{GeneralTask, Settings, Task}
 import fs2.Stream
 import log.effect.LogWriter
 
@@ -15,8 +16,19 @@ sealed trait Result extends Product with Serializable {
     */
   val task: Task
 }
-case class Success(override val task: Task)                  extends Result
-case class Failure(override val task: Task, failure: String) extends Result
+
+object Result {
+  final case class Success(override val task: Task)                  extends Result
+  final case class Failure(override val task: Task, failure: String) extends Result
+
+  implicit val showResult: Show[Result] = (result: Result) => {
+    val taskName = result.task.getClass.getSimpleName
+    result match {
+      case Success(t)      => s"""👍 Success: $taskName[${t.desc}]"""
+      case Failure(t, err) => s"""❌ Failure: $taskName[${t.desc} -> $err ]"""
+    }
+  }
+}
 
 /**
   * An implementation of a task runner
@@ -31,9 +43,7 @@ object TaskRunner {
     t: Task
   ): Stream[F, TaskRunner[F, Task]] =
     t match {
-//      case _: RedisTask   => RedisTaskRunner[F](settings)
-//      case _: KafkaTask   => KafkaTaskRunner[F](settings)
-//      case _: ApiTask     => ApiTaskRunner[F](settings)
+      // more specific runner types coming s
       case _: GeneralTask => GeneralTaskRunner[F]()
     }
 

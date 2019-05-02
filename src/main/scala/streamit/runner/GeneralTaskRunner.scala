@@ -1,10 +1,11 @@
 package streamit.runner
 
-import cats.effect.{ ConcurrentEffect, ContextShift, Timer }
+import cats.effect.{ConcurrentEffect, ContextShift, Timer}
 import fs2.Stream
 import log.effect.LogWriter
 import log.effect.fs2.syntax._
-import streamit.{ GeneralTask, Sleep, Task }
+import streamit.runner.Result._
+import streamit.{GeneralTask, Sleep, Task}
 
 object GeneralTaskRunner {
   def apply[F[_]: ConcurrentEffect: ContextShift: Timer: LogWriter](): Stream[F, GeneralTaskRunner[F]] =

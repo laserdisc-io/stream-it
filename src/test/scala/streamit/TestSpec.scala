@@ -1,7 +1,7 @@
 package streamit
 
 import org.scalatest.Matchers._
-import streamit.runner.Success
+import streamit.runner.Result._
 
 import scala.concurrent.duration._
 

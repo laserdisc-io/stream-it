@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit
 
 import cats.effect._
 import cats.instances.list._
-import cats.syntax.apply._
 import cats.syntax.flatMap._
 import cats.syntax.traverse._
 import streamit.client.{ ApacheKafkaClient, FS2KafkaClient }
@@ -166,7 +165,7 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
       .evalMap { producer =>
         producer.produce(
           ProducerMessage.one(ProducerRecord(task.topic, task.key, task.payload.noSpaces))
-        ) *>
+        ) >>
           logger.info(s"Produced event with key $task.key on topic $task.topic")
       }
       .as(Success(task))
@@ -209,8 +208,8 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
         )
       )
       .evalTap(rec => {
-        logger.info(s"Performing ${verifications.size} verifications against record..") *>
-          verifications.map(v => v(rec)).sequence *>
+        logger.info(s"Performing ${verifications.size} verifications against record..") >>
+          verifications.map(v => v(rec)).sequence >>
           logger.info(s"Verifications completed")
       })
       .last
@@ -363,7 +362,7 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     task: KafkaAvroTopicContentCheck
   ): ConsumerRecord[Json, Json] => F[Unit] =
     rec => {
-      verifyChecks("key", rec.key(), task.keyChecks) *>
+      verifyChecks("key", rec.key(), task.keyChecks) >>
         verifyChecks("value", rec.value(), task.valueChecks)
     }
 
@@ -395,7 +394,7 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
             result
           }
           .toList
-          .sequence *> logger.info(s"$desc checks completed")
+          .sequence >> logger.info(s"$desc checks completed")
     }
 
   private[this] def valueMatches(v: String, expected: Regex, context: String): F[Unit] = v match {

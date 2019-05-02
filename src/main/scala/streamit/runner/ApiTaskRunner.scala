@@ -1,7 +1,7 @@
 package streamit.runner
 
 import cats.effect._
-import cats.syntax.apply._
+import cats.syntax.flatMap._
 import fs2.Stream
 import io.circe.Json
 import log.effect.LogWriter
@@ -70,7 +70,7 @@ class ApiTaskRunnerImpl[F[_]](settings: ApiSettings)(
         case (k, v) => Header(k, v).asInstanceOf[Header]
       }).toList: _*)
 
-      logger.info(s"Performing GET on '$path'") *>
+      logger.info(s"Performing GET on '$path'") >>
         client.fetch[Json](request) {
           case Successful(resp) => resp.decodeJson[Json]
           case NotFound(_)      => F.raiseError(new Exception(s" response for $path"))

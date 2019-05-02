@@ -5,7 +5,6 @@ import java.util.concurrent.Executors.newFixedThreadPool
 
 import cats.MonadError
 import cats.effect._
-import cats.syntax.apply._
 import cats.syntax.flatMap._
 import fs2.Stream
 import laserdisc._
@@ -70,7 +69,7 @@ class RedisTaskRunnerImpl[F[_]](client: LaserDiscClient[F])(
     Stream.eval(client.send1(strings.get[String](redisKey)).flatMap {
 
       case Right(Some(value)) =>
-        logger.info(s"For key $redisKey got value: $value") *> F.pure(value)
+        logger.info(s"For key $redisKey got value: $value") >> F.pure(value)
 
       case Right(None) =>
         F.raiseError[String](new RuntimeException(s"No value found for key: $redisKey"))

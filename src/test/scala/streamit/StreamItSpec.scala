@@ -28,7 +28,7 @@ trait StreamItSpec extends WordSpec {
 
     log4sLog[IO]("stream-it")
       .flatMap { implicit logger =>
-        logger.info("starting app") *>
+        logger.info("starting app") >>
           new SpecRunner[IO](settings)
             .run(spec)
             .compile

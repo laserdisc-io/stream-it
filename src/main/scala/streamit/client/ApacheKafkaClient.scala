@@ -5,10 +5,12 @@ import java.util.{ Properties, Collection => JavaCollection }
 
 import cats.effect._
 import cats.syntax.apply._
+import cats.syntax.flatMap._
 import fs2.Stream
 import fs2.kafka.{ KafkaConsumer => _ }
 import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import log.effect.LogWriter
+import log.effect.fs2.syntax._
 import org.apache.kafka.clients.admin.{ AdminClient, AdminClientConfig }
 import org.apache.kafka.clients.consumer._
 import org.apache.kafka.common.TopicPartition
@@ -49,8 +51,7 @@ class ApacheKafkaClient[F[_]: ConcurrentEffect](settings: KafkaSettings)(
     settings.zookeeper match {
       case None =>
         // zookeeper is an optional config, even if the kafkarunner gets configured
-        Stream
-          .eval(logger.warn("Zookeeper host not configured, skipping ZK test"))
+        logger.infoS("Zookeeper host not configured, skipping ZK test")
           .flatMap(_ => Stream.empty)
       case Some(zkHost) =>
         Stream.bracketCase(
@@ -58,7 +59,7 @@ class ApacheKafkaClient[F[_]: ConcurrentEffect](settings: KafkaSettings)(
             logger.info(s"Created zookeeper client to talk to zk host: $zkHost")
         )(
           (ac, _) =>
-            ConcurrentEffect[F].delay(ac.close()) *> logger.info(s"Zookeeper client Closed")
+            ConcurrentEffect[F].delay(ac.close()) >> logger.info(s"Zookeeper client Closed")
         )
     }
 
@@ -74,7 +75,7 @@ class ApacheKafkaClient[F[_]: ConcurrentEffect](settings: KafkaSettings)(
         logger.info(
           s"Created admin client to talk to bootstrap server: ${settings.bootstrapServers}"
         )
-    )((ac, _) => ConcurrentEffect[F].delay(ac.close()) *> logger.info(s"Admin client closed"))
+    )((ac, _) => ConcurrentEffect[F].delay(ac.close()) >> logger.info(s"Admin client closed"))
   }
 
   /**
@@ -110,7 +111,7 @@ class ApacheKafkaClient[F[_]: ConcurrentEffect](settings: KafkaSettings)(
             logger.info(
               s"Created consumer to bootstrap server: ${settings.bootstrapServers}, listing topics"
             )
-        )((c, _) => ConcurrentEffect[F].delay(c.close()) *> logger.info("Consumer closed"))
+        )((c, _) => ConcurrentEffect[F].delay(c.close()) >> logger.info("Consumer closed"))
       })
   }
 
@@ -249,7 +250,7 @@ class ApacheKafkaClient[F[_]: ConcurrentEffect](settings: KafkaSettings)(
       .evalTap(recs => {
         val headOffset = recs.headOption.fold("n/a") { _.offset.toString }
         val lastOffset = recs.lastOption.fold("n/a") { _.offset.toString }
-        logger.info(s"Finished poll, got ${recs.size}") *>
+        logger.info(s"Finished poll, got ${recs.size}") >>
           logger.debug(s"Offset of first record: $headOffset, last offset $lastOffset")
       })
       .flatMap(recs => Stream(recs: _*))

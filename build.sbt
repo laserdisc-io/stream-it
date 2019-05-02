@@ -41,14 +41,27 @@ val scalacOpts = Seq(
 )
 
 val V = new {
-  val scalatest     = "3.0.7"
-  val kindProjector = "0.9.10"
-  val silencer      = "1.3.3"
+  val scalatest      = "3.0.7"
+  val kindProjector  = "0.9.10"
+  val silencer       = "1.3.3"
+  val cats           = "1.6.0"
+  val catsEffect     = "1.2.0"
+  val fs2            = "1.0.4"
+  val logEffect      = "0.5.0"
+  val refined        = "0.9.5"
+  val logbackClassic = "1.2.3"
 }
 
 lazy val appDependencies = Seq(
-  "com.github.ghik" %% "silencer-lib" % V.silencer,
-  "org.scalatest"   %% "scalatest"    % V.scalatest % Test
+  "com.github.ghik" %% "silencer-lib"    % V.silencer,
+  "org.typelevel"   %% "cats-core"       % V.cats,
+  "org.typelevel"   %% "cats-effect"     % V.catsEffect,
+  "io.laserdisc"    %% "log-effect-core" % V.logEffect,
+  "io.laserdisc"    %% "log-effect-fs2"  % V.logEffect,
+  "co.fs2"          %% "fs2-core"        % V.fs2,
+  "eu.timepit"      %% "refined"         % V.refined,
+  "ch.qos.logback"  % "logback-classic"  % V.logbackClassic % Test,
+  "org.scalatest"   %% "scalatest"       % V.scalatest % Test
 ) map (_.withSources)
 
 lazy val compilerPluginsDependencies = Seq(

@@ -42,7 +42,7 @@ val scalacOpts = Seq(
 
 lazy val customResolvers = Seq(
   Resolver.bintrayRepo("ovotech", "maven"),
-  "Confluent" at "http://packages.confluent.io/maven/"
+  "Confluent" at "https://packages.confluent.io/maven/"
 )
 
 val V = new {

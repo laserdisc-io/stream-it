@@ -62,7 +62,7 @@ val V = new {
   val laserdisc      = "0.2.3"
   val http4s         = "0.20.0-RC1"
   val confluent      = "5.2.1"
-  val avro           = "1.8.2"
+  val avro           = "1.9.0"
   val prometheus     = "0.9.0-M5"
   val diffson        = "3.1.1"
 }

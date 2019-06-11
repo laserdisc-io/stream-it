@@ -46,7 +46,7 @@ lazy val customResolvers = Seq(
 )
 
 val V = new {
-  val scalatest      = "3.0.7"
+  val scalatest      = "3.0.8"
   val kindProjector  = "0.9.10"
   val silencer       = "1.4.1"
   val cats           = "1.6.1"

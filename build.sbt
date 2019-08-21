@@ -47,7 +47,7 @@ lazy val customResolvers = Seq(
 
 val V = new {
   val scalatest      = "3.0.8"
-  val kindProjector  = "0.9.10"
+  val kindProjector  = "0.10.0"
   val silencer       = "1.4.2"
   val cats           = "1.6.1"
   val catsEffect     = "1.4.0"
@@ -101,7 +101,7 @@ lazy val appDependencies = Seq(
 
 lazy val compilerPluginsDependencies = Seq(
   compilerPlugin(
-    "org.spire-math" %% "kind-projector" % V.kindProjector cross CrossVersion.binary
+    "org.typelevel" %% "kind-projector" % V.kindProjector cross CrossVersion.binary
   ),
   compilerPlugin("com.github.ghik" %% "silencer-plugin" % V.silencer)
 )

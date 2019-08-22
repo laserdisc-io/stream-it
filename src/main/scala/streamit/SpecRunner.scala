@@ -30,7 +30,7 @@ final class SpecRunner[F[_]: ConcurrentEffect: ContextShift: Timer](settings: F[
 
   def run(spec: Spec): Stream[F, TestStats] =
     Stream(spec)
-      .evalTap { _.logPreview }
+      .evalTap { _.logPreview[F] }
       .flatMap { s =>
         def logSummary(stats: TestStats): Stream[F, TestStats] =
           Stream.eval {

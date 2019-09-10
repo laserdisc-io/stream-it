@@ -10,7 +10,7 @@ jdk:
   - openjdk11
 
 script:
-   - sbt ++$TRAVIS_SCALA_VERSION fullCiBuild
+   - sbt -Dsbt.color=always -Dsbt.supershell=false ++$TRAVIS_SCALA_VERSION fullCiBuild
 
 cache:
   directories:

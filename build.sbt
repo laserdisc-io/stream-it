@@ -1,4 +1,4 @@
-val `scala 212` = "2.12.8"
+val `scala 212` = "2.12.10"
 
 val scalacOpts = Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.

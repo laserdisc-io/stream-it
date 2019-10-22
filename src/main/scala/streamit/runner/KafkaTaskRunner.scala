@@ -6,14 +6,14 @@ import cats.effect._
 import cats.instances.list._
 import cats.syntax.flatMap._
 import cats.syntax.traverse._
-import streamit.client.{ ApacheKafkaClient, FS2KafkaClient }
-import streamit.syntax._
-import streamit.util.AvroToJSONDeserializer
-import streamit._
+import diffson._
+import diffson.circe._
+import diffson.jsonpatch.lcsdiff._
+import diffson.lcs._
 import fs2.Stream
 import fs2.kafka._
-import gnieh.diffson.circe._
 import io.circe.Json
+import io.circe.syntax._
 import log.effect.LogWriter
 import org.apache.kafka.clients.admin.TopicDescription
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -24,7 +24,11 @@ import org.apache.kafka.common.serialization.{
   StringDeserializer,
   StringSerializer
 }
+import streamit._
+import streamit.client.{ ApacheKafkaClient, FS2KafkaClient }
 import streamit.runner.Result.{ Failure, Success }
+import streamit.syntax._
+import streamit.util.AvroToJSONDeserializer
 
 import scala.collection.JavaConverters._
 import scala.util.matching.Regex
@@ -67,6 +71,7 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
   implicit val avroDes: Deserializer[Json] = new AvroToJSONDeserializer(
     kafkaSettings.schemaRegistry
   )
+  implicit val diffsonLCS: Patience[Json] = new Patience[Json]
 
   def run[TT >: KafkaTask <: Task](task: TT): Stream[F, Result] =
     task match {
@@ -143,11 +148,7 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
                    | ------------------------------ Expected JSON ------------------------------ \n
                    | ${expectedValue.canonicalJson.spaces2}\n
                    | ------- To fix this, your 'expected' needs the following changes: --------- \n
-                   | ${JsonDiff.diff(
-                     expectedValue.canonicalJson,
-                     event.record.value.canonicalJson,
-                     remember = false
-                   )}\n
+                   | ${diff(expectedValue.canonicalJson, event.record.value.canonicalJson).asJson}\n
                    | --------------------------------------------------------------------------- \n
                    | """.stripMargin
               )

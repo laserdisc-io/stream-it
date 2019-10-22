@@ -64,7 +64,7 @@ val V = new {
   val confluent      = "5.3.1"
   val avro           = "1.9.1"
   val prometheus     = "0.9.0-M5"
-  val diffson        = "3.1.1"
+  val diffson        = "4.0.0"
 }
 
 lazy val appDependencies = Seq(

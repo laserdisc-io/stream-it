@@ -55,7 +55,6 @@ val V = new {
   val logEffect      = "0.11.2"
   val refined        = "0.9.10"
   val logbackClassic = "1.2.3"
-  val ciris          = "0.12.1"
   val fs2Kafka       = "0.19.9"
   val circe          = "0.12.3"
   val circeOptics    = "0.12.0"
@@ -80,9 +79,6 @@ lazy val appDependencies = Seq(
   "io.confluent"            % "kafka-avro-serializer" % V.confluent,
   "io.laserdisc"            %% "log-effect-core"      % V.logEffect,
   "io.laserdisc"            %% "log-effect-fs2"       % V.logEffect,
-  "is.cir"                  %% "ciris-cats"           % V.ciris,
-  "is.cir"                  %% "ciris-core"           % V.ciris,
-  "is.cir"                  %% "ciris-refined"        % V.ciris,
   "io.circe"                %% "circe-core"           % V.circe,
   "io.circe"                %% "circe-generic"        % V.circe,
   "io.circe"                %% "circe-parser"         % V.circe,

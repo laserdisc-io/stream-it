@@ -59,11 +59,11 @@ val V = new {
   val circe          = "0.12.3"
   val circeOptics    = "0.12.0"
   val laserdisc      = "0.2.3"
-  val http4s         = "0.20.14"
+  val http4s         = "0.20.15"
   val confluent      = "5.3.1"
   val avro           = "1.9.1"
   val prometheus     = "0.9.0-M5"
-  val diffson        = "4.0.0"
+  val diffson        = "4.0.1"
 }
 
 lazy val appDependencies = Seq(

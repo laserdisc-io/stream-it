@@ -5,12 +5,12 @@ import java.util.concurrent.Executors
 import cats.effect.{ ContextShift, IO, Timer }
 import cats.implicits._
 import log.effect.fs2.SyncLogWriter.log4sLog
-import org.scalatest.WordSpec
+import org.scalatest.wordspec.AnyWordSpec
 import streamit.util.TestStats
 
 import scala.concurrent.{ ExecutionContext, ExecutionContextExecutorService }
 
-trait StreamItSpec extends WordSpec {
+trait StreamItSpec extends AnyWordSpec {
 
   implicit protected val ec: ExecutionContextExecutorService =
     ExecutionContext.fromExecutorService(

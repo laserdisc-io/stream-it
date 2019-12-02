@@ -1,6 +1,6 @@
 package streamit
 
-import org.scalatest.Matchers._
+import org.scalatest.matchers.should.Matchers._
 import streamit.runner.Result._
 
 import scala.concurrent.duration._

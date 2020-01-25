@@ -1,22 +1,19 @@
 package streamit.runner
 
-import java.nio.channels.AsynchronousChannelGroup.withThreadPool
-import java.util.concurrent.Executors.newFixedThreadPool
-
-import cats.MonadError
-import cats.effect._
+import cats.effect.{ Concurrent, ContextShift, Timer }
 import cats.syntax.flatMap._
 import fs2.Stream
 import laserdisc._
+import laserdisc.all._
 import laserdisc.fs2.{ RedisClient => LaserDiscClient, _ }
 import log.effect.LogWriter
 import streamit._
-import streamit.syntax._
 import streamit.runner.Result.{ Failure, Success }
+import streamit.syntax._
 
 object RedisTaskRunner {
 
-  def apply[F[_]: ConcurrentEffect: ContextShift: Timer: LogWriter](
+  def apply[F[_]: Concurrent: ContextShift: Timer: LogWriter](
     settings: F[Settings]
   ): Stream[F, RedisTaskRunner[F]] =
     Stream
@@ -27,11 +24,9 @@ object RedisTaskRunner {
           Stream.apply(new RedisNoOpTaskRunner())
 
         case Some(s) =>
-          val acgResource =
-            MkResource(ConcurrentEffect[F].delay(withThreadPool(newFixedThreadPool(2))))
-          Stream.resource(acgResource).flatMap { implicit acg =>
-            LaserDiscClient[F](Set(s.redisAddress)).map(new RedisTaskRunnerImpl(_))
-          }
+          val host = s.redisAddress.host
+          val port = s.redisAddress.port
+          Stream.resource(LaserDiscClient.toNode[F](host, port)).map(new RedisTaskRunnerImpl(_))
       }
 }
 
@@ -43,8 +38,9 @@ final class RedisNoOpTaskRunner[F[_]] extends RedisTaskRunner[F] {
     fail(task)
 }
 
-class RedisTaskRunnerImpl[F[_]](client: LaserDiscClient[F])(
-  implicit F: MonadError[F, Throwable],
+class RedisTaskRunnerImpl[F[_]: ContextShift: Timer: LogWriter](client: LaserDiscClient[F])(
+  implicit
+  F: Concurrent[F],
   logger: LogWriter[F]
 ) extends RedisTaskRunner[F] {
 
@@ -66,16 +62,16 @@ class RedisTaskRunnerImpl[F[_]](client: LaserDiscClient[F])(
       )
 
   def redisGetValue(redisKey: Key): Stream[F, String] =
-    Stream.eval(client.send1(strings.get[String](redisKey)).flatMap {
+    Stream.eval(
+      client.send(get[String](redisKey)).flatMap {
+        case Right(Some(value)) =>
+          logger.info(s"For key $redisKey got value: $value") >> F.pure(value)
 
-      case Right(Some(value)) =>
-        logger.info(s"For key $redisKey got value: $value") >> F.pure(value)
+        case Right(None) =>
+          F.raiseError[String](new RuntimeException(s"No value found for key: $redisKey"))
 
-      case Right(None) =>
-        F.raiseError[String](new RuntimeException(s"No value found for key: $redisKey"))
-
-      case Left(e) =>
-        F.raiseError[String](new RuntimeException(s"Error loading value for key: $redisKey", e))
-
-    })
+        case Left(e) =>
+          F.raiseError[String](new RuntimeException(s"Error loading value for key: $redisKey", e))
+      }
+    )
 }

@@ -67,33 +67,36 @@ val V = new {
 }
 
 lazy val appDependencies = Seq(
-  "com.github.ghik"         %% "silencer-lib"         % V.silencer,
-  "org.typelevel"           %% "cats-core"            % V.cats,
-  "org.typelevel"           %% "cats-effect"          % V.catsEffect,
-  "io.laserdisc"            %% "log-effect-core"      % V.logEffect,
-  "io.laserdisc"            %% "log-effect-fs2"       % V.logEffect,
-  "co.fs2"                  %% "fs2-core"             % V.fs2,
-  "eu.timepit"              %% "refined"              % V.refined,
-  "com.github.fd4s"         %% "fs2-kafka"            % V.fs2Kafka,
-  "org.apache.avro"         % "avro"                  % V.avro,
-  "io.confluent"            % "kafka-avro-serializer" % V.confluent,
-  "io.laserdisc"            %% "log-effect-core"      % V.logEffect,
-  "io.laserdisc"            %% "log-effect-fs2"       % V.logEffect,
-  "io.circe"                %% "circe-core"           % V.circe,
-  "io.circe"                %% "circe-generic"        % V.circe,
-  "io.circe"                %% "circe-parser"         % V.circe,
-  "io.circe"                %% "circe-optics"         % V.circeOptics,
-  "com.github.ghik"         %% "silencer-lib"         % V.silencer,
-  "io.laserdisc"            %% "laserdisc-core"       % V.laserdisc,
-  "io.laserdisc"            %% "laserdisc-fs2"        % V.laserdisc,
-  "org.http4s"              %% "http4s-dsl"           % V.http4s,
-  "org.http4s"              %% "http4s-circe"         % V.http4s,
-  "org.http4s"              %% "http4s-blaze-client"  % V.http4s,
-  "org.lyranthe.prometheus" %% "client"               % V.prometheus,
-  "org.gnieh"               %% "diffson-circe"        % V.diffson,
-  "ch.qos.logback"          % "logback-classic"       % V.logbackClassic % Test,
-  "org.scalatest"           %% "scalatest"            % V.scalatest % Test
+  "com.github.ghik"         %% "silencer-lib"        % V.silencer,
+  "org.typelevel"           %% "cats-core"           % V.cats,
+  "org.typelevel"           %% "cats-effect"         % V.catsEffect,
+  "io.laserdisc"            %% "log-effect-core"     % V.logEffect,
+  "io.laserdisc"            %% "log-effect-fs2"      % V.logEffect,
+  "co.fs2"                  %% "fs2-core"            % V.fs2,
+  "eu.timepit"              %% "refined"             % V.refined,
+  "com.github.fd4s"         %% "fs2-kafka"           % V.fs2Kafka,
+  "org.apache.avro"         % "avro"                 % V.avro,
+  "io.laserdisc"            %% "log-effect-core"     % V.logEffect,
+  "io.laserdisc"            %% "log-effect-fs2"      % V.logEffect,
+  "io.circe"                %% "circe-core"          % V.circe,
+  "io.circe"                %% "circe-generic"       % V.circe,
+  "io.circe"                %% "circe-parser"        % V.circe,
+  "io.circe"                %% "circe-optics"        % V.circeOptics,
+  "com.github.ghik"         %% "silencer-lib"        % V.silencer,
+  "io.laserdisc"            %% "laserdisc-core"      % V.laserdisc,
+  "io.laserdisc"            %% "laserdisc-fs2"       % V.laserdisc,
+  "org.http4s"              %% "http4s-dsl"          % V.http4s,
+  "org.http4s"              %% "http4s-circe"        % V.http4s,
+  "org.http4s"              %% "http4s-blaze-client" % V.http4s,
+  "org.lyranthe.prometheus" %% "client"              % V.prometheus,
+  "org.gnieh"               %% "diffson-circe"       % V.diffson,
+  "ch.qos.logback"          % "logback-classic"      % V.logbackClassic % Test,
+  "org.scalatest"           %% "scalatest"           % V.scalatest % Test
 ) map (_.withSources)
+
+lazy val noSourceAppDependencies = Seq(
+  "io.confluent" % "kafka-avro-serializer" % V.confluent,
+)
 
 lazy val compilerPluginsDependencies = Seq(
   compilerPlugin(
@@ -110,7 +113,7 @@ lazy val root = project
     scalacOptions       ++= scalacOpts,
     organization        := "io.laserdisc",
     resolvers           ++= customResolvers,
-    libraryDependencies ++= appDependencies ++ compilerPluginsDependencies,
+    libraryDependencies ++= appDependencies ++ noSourceAppDependencies ++ compilerPluginsDependencies,
     addCommandAlias("format", ";scalafmt;test:scalafmt;scalafmtSbt"),
     addCommandAlias(
       "updates",

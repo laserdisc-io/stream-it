@@ -1,4 +1,4 @@
-val `scala 212` = "2.12.10"
+val scala = "2.12.10"
 
 val scalacOpts = Seq(
   "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -55,11 +55,11 @@ val V = new {
   val logEffect      = "0.12.1"
   val refined        = "0.9.10"
   val logbackClassic = "1.2.3"
-  val fs2Kafka       = "0.19.9"
+  val fs2Kafka       = "1.0.0"
   val circe          = "0.12.3"
   val circeOptics    = "0.12.0"
-  val laserdisc      = "0.2.3"
-  val http4s         = "0.20.15"
+  val laserdisc      = "0.3.0"
+  val http4s         = "0.20.16"
   val confluent      = "5.3.2"
   val avro           = "1.9.1"
   val prometheus     = "0.9.0-M5"
@@ -74,7 +74,7 @@ lazy val appDependencies = Seq(
   "io.laserdisc"            %% "log-effect-fs2"       % V.logEffect,
   "co.fs2"                  %% "fs2-core"             % V.fs2,
   "eu.timepit"              %% "refined"              % V.refined,
-  "com.ovoenergy"           %% "fs2-kafka"            % V.fs2Kafka,
+  "com.github.fd4s"         %% "fs2-kafka"            % V.fs2Kafka,
   "org.apache.avro"         % "avro"                  % V.avro,
   "io.confluent"            % "kafka-avro-serializer" % V.confluent,
   "io.laserdisc"            %% "log-effect-core"      % V.logEffect,
@@ -106,7 +106,7 @@ lazy val root = project
   .in(file("."))
   .settings(
     name                := "stream-it",
-    scalaVersion        := `scala 212`,
+    scalaVersion        := scala,
     scalacOptions       ++= scalacOpts,
     organization        := "io.laserdisc",
     resolvers           ++= customResolvers,

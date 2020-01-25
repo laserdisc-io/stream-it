@@ -19,8 +19,8 @@ import org.apache.kafka.clients.admin.TopicDescription
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.config.ConfigResource
 import org.apache.kafka.common.serialization.{
-  Deserializer,
-  Serializer,
+  Deserializer => apDeserializer,
+  Serializer => apSerializer,
   StringDeserializer,
   StringSerializer
 }
@@ -66,10 +66,21 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
   private[this] val fs2Client    = FS2KafkaClient[F](kafkaSettings)
   private[this] val apacheClient = ApacheKafkaClient[F](kafkaSettings)
 
-  implicit val stringDes: Deserializer[String] = new StringDeserializer
-  implicit val stringSer: Serializer[String]   = new StringSerializer
-  implicit val avroDes: Deserializer[Json] = new AvroToJSONDeserializer(
-    kafkaSettings.schemaRegistry
+  implicit val apStringDes: apDeserializer[String] = new StringDeserializer
+  implicit val apStringSer: apSerializer[String]   = new StringSerializer
+  implicit val apAvroDes: apDeserializer[Json] =
+    new AvroToJSONDeserializer(
+      kafkaSettings.schemaRegistry
+    )
+
+  implicit val stringDes: Deserializer[F, String] =
+    Deserializer.delegate[F, String](new StringDeserializer)
+  implicit val stringSer: Serializer[F, String] =
+    Serializer.delegate[F, String](new StringSerializer)
+  implicit val avroDes: Deserializer[F, Json] = Deserializer.delegate[F, Json](
+    new AvroToJSONDeserializer(
+      kafkaSettings.schemaRegistry
+    )
   )
   implicit val diffsonLCS: Patience[Json] = new Patience[Json]
 
@@ -128,7 +139,7 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
             }
           )
           .filter(_.record.key == expectedKey)
-          .runForAtMost(m => m.record.value().canonicalJson == expectedValue.canonicalJson, timeout)
+          .runForAtMost(m => m.record.value.canonicalJson == expectedValue.canonicalJson, timeout)
           .evalTap(
             evt =>
               logger.debug(
@@ -165,7 +176,7 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
       .createProducer[String, String]
       .evalMap { producer =>
         producer.produce(
-          ProducerMessage.one(ProducerRecord(task.topic, task.key, task.payload.noSpaces))
+          ProducerRecords.one(ProducerRecord(task.topic, task.key, task.payload.noSpaces))
         ) >>
           logger.info(s"Produced event with key $task.key on topic $task.topic")
       }
@@ -193,7 +204,7 @@ class KafkaTaskRunnerImpl[F[_]: ConcurrentEffect: ContextShift: Timer](
     groupId: ConsumerGroupId,
     task: KafkaTopicContentCheck,
     verifications: List[ConsumerRecord[K, V] => F[Unit]]
-  )(implicit keyDes: Deserializer[K], valDes: Deserializer[V]): Stream[F, Result] =
+  )(implicit keyDes: apDeserializer[K], valDes: apDeserializer[V]): Stream[F, Result] =
     apacheClient
       .pollWithOffset[K, V](
         task.topic,

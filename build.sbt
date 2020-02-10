@@ -56,14 +56,14 @@ val V = new {
   val refined        = "0.9.12"
   val logbackClassic = "1.2.3"
   val fs2Kafka       = "1.0.0"
-  val circe          = "0.12.3"
+  val circe          = "0.13.0"
   val circeOptics    = "0.12.0"
   val laserdisc      = "0.3.0"
-  val http4s         = "0.20.17"
+  val http4s         = "0.21.0"
   val confluent      = "5.3.2"
   val avro           = "1.9.1"
   val prometheus     = "0.9.0-M5"
-  val diffson        = "4.0.1"
+  val diffson        = "4.0.2"
 }
 
 lazy val appDependencies = Seq(

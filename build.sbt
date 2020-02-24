@@ -46,7 +46,7 @@ lazy val customResolvers = Seq(
 )
 
 val V = new {
-  val scalatest      = "3.1.0"
+  val scalatest      = "3.1.1"
   val kindProjector  = "0.10.3"
   val silencer       = "1.4.2"
   val cats           = "2.1.0"
@@ -59,7 +59,7 @@ val V = new {
   val circe          = "0.13.0"
   val circeOptics    = "0.13.0"
   val laserdisc      = "0.3.0"
-  val http4s         = "0.21.0"
+  val http4s         = "0.21.1"
   val confluent      = "5.3.2"
   val avro           = "1.9.2"
   val prometheus     = "0.9.0-M5"
